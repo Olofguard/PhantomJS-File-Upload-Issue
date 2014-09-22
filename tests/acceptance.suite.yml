@@ -6,7 +6,7 @@
 
 class_name: AcceptanceTester
 modules:
-    enabled: [WebDriver, WebHelper, Asserts, Db]
+    enabled: [WebDriver, Asserts]
     config:
         WebDriver:
             url: 'http://localhost:8000'

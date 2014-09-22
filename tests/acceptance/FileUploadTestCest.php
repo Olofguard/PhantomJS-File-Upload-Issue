@@ -2,11 +2,11 @@
 
 class FileUploadTestCest
 {
-    public function tryToTest(AcceptanceTester $I)
+    public function testFileUpload(AcceptanceTester $I)
     {
         $I->amOnPage('/');
-        $I->fillField('name', 'John Doe');
-        $I->attachFile('file', 'testFile.csv');
+        $I->fillField('//*[@id="name"]', 'John Doe');
+        $I->attachFile('//*[@id="file"]', 'testFile.csv');
         $I->click('Submit');
         $I->see('Thanks for the upload!');
     }
