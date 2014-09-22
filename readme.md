@@ -6,6 +6,7 @@ This example is built with Laravel and it's purpose is to recreate the file uplo
 1. Clone this repo.
 2. Install the latest version of PhantomJS `brew install phantomjs` 
 3. Download [Selenium Standalone Server](http://docs.seleniumhq.org/download/)
+
 > Note: I'm using selenium server standalone 2.42.2
 
 
