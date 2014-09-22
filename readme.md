@@ -1,25 +1,69 @@
-## Laravel PHP Framework
+# File upload issue
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/downloads.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+This example is built with Laravel and it's purpose is to recreate the file upload issue experienced when switching the browser used by codeception, from firefox, to the headless browser phantomjs. 
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, and caching.
+## Installation 
+1. Clone this repo.
+2. Install the latest version of PhantomJS `brew install phantomjs` 
+3. Download [Selenium Standalone Server](http://docs.seleniumhq.org/download/)
+> Note: I'm using selenium server standalone 2.42.2
 
-Laravel aims to make the development process a pleasing one for the developer without sacrificing application functionality. Happy developers make the best code. To this end, we've attempted to combine the very best of what we have seen in other web frameworks, including frameworks implemented in other languages, such as Ruby on Rails, ASP.NET MVC, and Sinatra.
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+## Steps to recreate passing tests (firefox)
 
-## Official Documentation
+1. Serve up the app `artisan serve`
+2. Fire up Selenium `java -jar selenium-server-standalone-2.xx.xxx.jar`
+3. Finally you're ready to run the tests `vendor/bin/codecept run`
 
-Documentation for the entire framework can be found on the [Laravel website](http://laravel.com/docs).
+> You should see green. `OK (1 test, 1 assertion)`
 
-### Contributing To Laravel
 
-**All issues and pull requests should be filed on the [laravel/framework](http://github.com/laravel/framework) repository.**
 
-### License
+## Steps to recreate failing tests with (PhantomJS)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+1. Kill the selenium server if you have it running. `ctl + c`
+2. Get PhantomJS running on port 4444 `phantomjs --webdriver=4444`
+3. Change the string `'firefox'` to `'phantomjs'` in the apps acceptance test yml file `tests/acceptance.suite.yml`. 
+4. Finally you're ready to run the tests `vendor/bin/codecept run`
+
+> You should see red. Tests: 1, Assertions: 0, Errors: 1.
+
+
+## The issue
+
+In short, Phantomjs is throwing an error Invalid Command Method. It appears this error is being thrown within ghostdriver, specifically in ghost driver's request_handler.js on line 105. It's as though it can't read the json from the curl request initiated by the facebook webdriver's HttpCommandExecutor class. This curl request should populate the form field for uploading the file, but instead the curl request fails after getting a status code of 405 in return. Below is an example of the curl request sent by the HttpCommandExecutor.
+
+```
+{
+  "url": "http://127.0.0.1:4444/wd/hub/session/bf4a6d70-3e71-11e4-858a-5fddebdf4faa/file",
+  "content_type": "text/plain",
+  "http_code": 405,
+  "header_size": 99,
+  "request_size": 505,
+  "filetime": -1,
+  "ssl_verify_result": 0,
+  "redirect_count": 0,
+  "total_time": 0.001383,
+  "namelookup_time": 0.000016,
+  "connect_time": 0.00012,
+  "pretransfer_time": 0.00015,
+  "size_upload": 315,
+  "size_download": 844,
+  "speed_download": 610267,
+  "speed_upload": 227765,
+  "download_content_length": 844,
+  "upload_content_length": 315,
+  "starttransfer_time": 0.001376,
+  "redirect_time": 0,
+  "certinfo": [],
+  "primary_ip": "127.0.0.1",
+  "primary_port": 4444,
+  "local_ip": "127.0.0.1",
+  "local_port": 49959,
+  "redirect_url": ""
+}
+```
+
+
+
+
