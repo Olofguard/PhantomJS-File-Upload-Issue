@@ -15,18 +15,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
-                <h1 class="page-header">A simple form with a file upload</h1>
-                {{ Form::open(['/']) }}
-                    <div class="form-group">
-                        <label for="name">Your Name:</label>
-                        <input type="text" class="form-control" id="name" placeholder="Enter your name">
-                    </div>
-                    <div class="form-group">
-                        <label for="file">File input</label>
-                        <input type="file" id="file">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                {{ Form::close(); }}
+                <h1 class="page-header">Thanks for the upload!</h1>
             </div>
         </div>
     </div>
