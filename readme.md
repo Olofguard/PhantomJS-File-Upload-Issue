@@ -33,7 +33,7 @@ This example is built with Laravel and it's purpose is to recreate the file uplo
 
 In short, Phantomjs is throwing an error Invalid Command Method. It appears this error is being thrown within ghostdriver, specifically in ghost driver's request_handler.js on line 105. It's as though it can't read the json from the curl request initiated by the facebook webdriver's HttpCommandExecutor class. This curl request should populate the form field for uploading the file, but instead the curl request fails after getting a status code of 405 in return. Below is an example of the curl request sent by the HttpCommandExecutor.
 
-```
+```json
 {
   "url": "http://127.0.0.1:4444/wd/hub/session/bf4a6d70-3e71-11e4-858a-5fddebdf4faa/file",
   "content_type": "text/plain",
@@ -64,6 +64,12 @@ In short, Phantomjs is throwing an error Invalid Command Method. It appears this
 }
 ```
 
+## More detail on the problem
+I'm using codeception to attachFile to the form. This ultimately calls upload() on the RemoteWebElement class from the facebook web driver using the local file path. Responsibility is then handed off to the HttpCommandExecutor through an execute call execute('sendFile', $params) , where a POST curl request should be sent to attach the file to the form. From my understanding this is where phantomjs and ghostdriver take over.
+
+I started to dig into the phantomjs/ghostdriver source, however, to me it seemed I had to rebuild phantomjs from source in order to test changes i make. I may be wrong (javascript is not my specialty), but I don't have the time to build from source over and over while debugging this issue.
+
+It is important to note that, I can switch off phantomjs, go back to firefox as the browser for my acceptance tests, and everything works flawlessly.
 
 
 
